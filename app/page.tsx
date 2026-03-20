@@ -148,10 +148,15 @@ export default function Home() {
       {/* 헤더 */}
       <div className="py-4 px-6" style={{ borderBottom: "1px solid #1e2d4a" }}>
         <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <span className="text-2xl">⚡</span>
-          <h1 className="font-bold text-xl tracking-wide" style={{ color: "#C89B3C" }}>
-            Lane Changer
-          </h1>
+          <button
+            onClick={() => { setResult(null); setError(""); setInput(""); }}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
+            <span className="text-2xl">⚡</span>
+            <h1 className="font-bold text-xl tracking-wide" style={{ color: "#C89B3C" }}>
+              Lane Changer
+            </h1>
+          </button>
           <span className="text-xs ml-2" style={{ color: "#8a9bb5" }}>
             전적 기반 포지션 추천
           </span>
