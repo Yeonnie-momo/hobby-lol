@@ -179,7 +179,8 @@ export default function Home() {
                 setInput(e.target.value);
                 setShowDropdown(true);
               }}
-              onFocus={() => setShowDropdown(true)}
+              onFocus={(e) => { setShowDropdown(true); e.target.style.borderColor = "#C89B3C"; }}
+              onBlur={(e) => (e.target.style.borderColor = "#1e2d4a")}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAnalyze();
                 if (e.key === "Escape") setShowDropdown(false);
@@ -191,8 +192,6 @@ export default function Home() {
                 border: "1px solid #1e2d4a",
                 color: "#F0E6D3",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#C89B3C")}
-              onBlur={(e) => (e.target.style.borderColor = "#1e2d4a")}
             />
 
             {/* 드롭다운 */}
