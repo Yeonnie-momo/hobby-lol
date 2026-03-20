@@ -301,16 +301,17 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
     recommendations.push({ lane: "UTILITY", laneKr: "서포터", score, reasons, recommendedChampions: selectChampions("UTILITY", playstyle) });
   }
 
-  // 점수 정규화 (0~100)
-  const maxScore = Math.max(...recommendations.map((r) => r.score));
-  const minScore = Math.min(...recommendations.map((r) => r.score));
-  for (const rec of recommendations) {
-    rec.score = Math.round(((rec.score - minScore) / Math.max(maxScore - minScore, 1)) * 100);
-  }
-
   recommendations.sort((a, b) => b.score - a.score);
 
   const isHighWinRate = !isMultiPosition && winRate >= 0.55;
+
+  // 점수 정규화 — 고승률이면 최대 50점으로 제한 (굳이 바꿀 필요 없다는 신호)
+  const normalizeMax = isHighWinRate ? 50 : 100;
+  const maxScore = Math.max(...recommendations.map((r) => r.score));
+  const minScore = Math.min(...recommendations.map((r) => r.score));
+  for (const rec of recommendations) {
+    rec.score = Math.round(((rec.score - minScore) / Math.max(maxScore - minScore, 1)) * normalizeMax);
+  }
 
   // 멀티 포지션 또는 고승률이면 1순위만 표시
   const finalRecommendations = (isMultiPosition || isHighWinRate)
