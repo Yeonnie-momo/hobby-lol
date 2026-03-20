@@ -163,7 +163,9 @@ function avg(arr: number[]): number {
 export function extractStats(participant: Participant, gameDuration: number): MatchStats {
   const cs = participant.totalMinionsKilled + participant.neutralMinionsKilled;
   return {
-    position: participant.teamPosition || participant.individualPosition || "UNKNOWN",
+    position: (participant.teamPosition !== "INVALID" && participant.teamPosition)
+      || (participant.individualPosition !== "INVALID" && participant.individualPosition)
+      || "UNKNOWN",
     champion: participant.championName,
     kills: participant.kills,
     deaths: participant.deaths,
