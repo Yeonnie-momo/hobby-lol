@@ -74,13 +74,20 @@ export async function GET(req: NextRequest) {
 2~3문장. 한국어 반말. 이모지 없음.`;
 
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 300,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const comment = message.content[0].type === "text" ? message.content[0].text : "";
+    let comment = "";
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const message = await anthropic.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 300,
+          messages: [{ role: "user", content: prompt }],
+        });
+        comment = message.content[0].type === "text" ? message.content[0].text : "";
+        break;
+      } catch (e) {
+        if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
 
     return NextResponse.json({ ...analysis, comment, gameName, tagLine });
   } catch (err) {
