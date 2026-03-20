@@ -25,8 +25,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "최근 게임 기록이 없습니다" }, { status: 404 });
     }
 
-    // 3. 매치 상세 정보 병렬 조회 (최대 20게임)
-    const matches = await Promise.all(matchIds.slice(0, 20).map((id: string) => getMatch(id)));
+    // 3. 매치 상세 정보 배치 조회 (5개씩 나눠서 Rate Limit 방지)
+    const ids = matchIds.slice(0, 20);
+    const matches = [];
+    for (let i = 0; i < ids.length; i += 5) {
+      const batch = ids.slice(i, i + 5);
+      const results = await Promise.all(batch.map((id: string) => getMatch(id)));
+      matches.push(...results);
+      if (i + 5 < ids.length) await new Promise((r) => setTimeout(r, 1200));
+    }
 
     // 4. 해당 플레이어의 스탯만 추출
     const statsList = matches
