@@ -21,6 +21,7 @@ interface AnalysisResult {
   tagLine: string;
   currentMainLane: string;
   currentMainLaneKr: string;
+  isMultiPosition: boolean;
   playstyle: string[];
   recommendations: LaneRecommendation[];
   totalGames: number;
@@ -270,10 +271,16 @@ export default function Home() {
                     <span style={{ color: result.winRate >= 0.5 ? "#60a5fa" : "#f87171" }}>
                       {Math.round(result.winRate * 100)}%
                     </span>
-                    {" · 주 포지션 "}
-                    <span style={{ color: "#C89B3C" }}>
-                      {LANE_ICON[result.currentMainLane]} {result.currentMainLaneKr}
-                    </span>
+                    {result.isMultiPosition ? (
+                      <span style={{ color: "#f87171" }}> · 주포지션 없음</span>
+                    ) : (
+                      <>
+                        {" · 주 포지션 "}
+                        <span style={{ color: "#C89B3C" }}>
+                          {LANE_ICON[result.currentMainLane]} {result.currentMainLaneKr}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -301,7 +308,7 @@ export default function Home() {
 
             {/* 추천 포지션 */}
             <h3 className="font-bold text-lg" style={{ color: "#C89B3C" }}>
-              추천 포지션
+              {result.isMultiPosition ? "당장 이 포지션 하나만 파세요" : "추천 포지션"}
             </h3>
             {result.recommendations.map((rec, idx) => (
               <div

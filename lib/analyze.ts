@@ -38,6 +38,7 @@ export interface ChampionRec {
 export interface AnalysisResult {
   currentMainLane: string;
   currentMainLaneKr: string;
+  isMultiPosition: boolean;
   playstyle: string[];
   recommendations: LaneRecommendation[];
   totalGames: number;
@@ -134,7 +135,10 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
       positionCount[s.position] = (positionCount[s.position] ?? 0) + 1;
     }
   }
-  const currentMainLane = Object.entries(positionCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "UNKNOWN";
+  const sortedPositions = Object.entries(positionCount).sort((a, b) => b[1] - a[1]);
+  const currentMainLane = sortedPositions[0]?.[0] ?? "UNKNOWN";
+  const mainLaneRatio = (sortedPositions[0]?.[1] ?? 0) / statsList.length;
+  const isMultiPosition = mainLaneRatio < 0.4;
 
   // 전체 평균 스탯 계산
   const winRate = statsList.filter((s) => s.win).length / statsList.length;
@@ -173,7 +177,7 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
   const recommendations: LaneRecommendation[] = [];
 
   // ─── TOP ───
-  if (currentMainLane !== "TOP") {
+  if (isMultiPosition || currentMainLane !== "TOP") {
     let score = 50;
     const reasons: string[] = [];
     if (avgTankiness >= 25000) { score += 15; reasons.push("피해 흡수량이 높아 탑 솔로 라인에 적합"); }
@@ -185,7 +189,7 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
   }
 
   // ─── JUNGLE ───
-  if (currentMainLane !== "JUNGLE") {
+  if (isMultiPosition || currentMainLane !== "JUNGLE") {
     let score = 50;
     const reasons: string[] = [];
     if (avgKP >= 0.6) { score += 15; reasons.push("킬 관여율이 높아 정글 갱킹 플레이에 최적"); }
@@ -200,7 +204,7 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
   }
 
   // ─── MIDDLE ───
-  if (currentMainLane !== "MIDDLE") {
+  if (isMultiPosition || currentMainLane !== "MIDDLE") {
     let score = 50;
     const reasons: string[] = [];
     if (avgDamage >= 20000) { score += 15; reasons.push("높은 딜량이 미드의 캐리 역할에 적합"); }
@@ -212,7 +216,7 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
   }
 
   // ─── BOTTOM (ADC) ───
-  if (currentMainLane !== "BOTTOM") {
+  if (isMultiPosition || currentMainLane !== "BOTTOM") {
     let score = 50;
     const reasons: string[] = [];
     if (csPerMin >= 7) { score += 15; reasons.push("높은 CS 수급 능력이 원딜의 핵심 역량에 부합"); }
@@ -224,7 +228,7 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
   }
 
   // ─── UTILITY (Support) ───
-  if (currentMainLane !== "UTILITY") {
+  if (isMultiPosition || currentMainLane !== "UTILITY") {
     let score = 50;
     const reasons: string[] = [];
     if (avgVision >= 25) { score += 15; reasons.push("시야 점수가 높아 서포터의 와드 관리에 적합"); }
@@ -244,11 +248,15 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
 
   recommendations.sort((a, b) => b.score - a.score);
 
+  // 멀티 포지션이면 1순위만 강조 (나머지는 참고용)
+  const finalRecommendations = isMultiPosition ? recommendations.slice(0, 1) : recommendations;
+
   return {
     currentMainLane,
     currentMainLaneKr: LANE_KR[currentMainLane] ?? currentMainLane,
+    isMultiPosition,
     playstyle,
-    recommendations,
+    recommendations: finalRecommendations,
     totalGames: statsList.length,
     winRate,
   };

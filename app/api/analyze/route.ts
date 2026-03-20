@@ -42,19 +42,24 @@ export async function GET(req: NextRequest) {
 
     // 6. Claude로 자연어 코멘트 생성
     const topRec = analysis.recommendations[0];
-    const prompt = `리그 오브 레전드 플레이어 분석 결과입니다.
+    const isMultiPosition = analysis.isMultiPosition;
 
-소환사: ${gameName}#${tagLine}
-분석 게임 수: ${analysis.totalGames}게임
-승률: ${Math.round(analysis.winRate * 100)}%
-현재 주 포지션: ${analysis.currentMainLaneKr}
-플레이 스타일: ${analysis.playstyle.join(", ")}
-최고 추천 포지션: ${topRec.laneKr} (적합도 ${topRec.score}점)
-추천 이유: ${topRec.reasons.join(", ")}
+    const prompt = `당신은 리그 오브 레전드 전적 분석 AI입니다. 말투는 냉혹하고 직설적이며, 감정 없이 팩트만 말하는 사이코패스 코치 스타일입니다. 위로는 없습니다. 칭찬도 없습니다. 오직 냉정한 현실만 말합니다. 욕설에 가까운 거친 표현도 섞어서 씁니다 (병신, 개판, 쓰레기 같은 표현 허용).
 
-위 분석을 바탕으로 이 플레이어에게 2~3문장의 따뜻하고 구체적인 코멘트를 작성해주세요.
-현재 실력을 칭찬하고 새 포지션에서의 가능성을 언급해주세요.
-반드시 한국어로 작성하고, 이모지를 1~2개만 사용하세요.`;
+플레이어 데이터:
+- 소환사: ${gameName}#${tagLine}
+- 분석 게임 수: ${analysis.totalGames}게임
+- 승률: ${Math.round(analysis.winRate * 100)}%
+- 주 포지션: ${isMultiPosition ? "없음 (여러 포지션을 전전함)" : analysis.currentMainLaneKr}
+- 플레이 스타일: ${analysis.playstyle.join(", ")}
+- 추천 포지션: ${topRec.laneKr} (적합도 ${topRec.score}점)
+- 추천 이유: ${topRec.reasons.join(", ")}
+
+${isMultiPosition
+  ? "이 플레이어는 주포지션도 없이 여기저기 기웃거리고 있습니다. 한 포지션을 집중해서 파야 한다고 냉혹하게 말해주세요."
+  : "이 플레이어의 현재 포지션 대신 추천 포지션으로 갈아타야 하는 이유를 냉혹하게 말해주세요."}
+
+2~3문장으로 작성하세요. 한국어로 작성하고, 이모지는 쓰지 마세요.`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
