@@ -19,11 +19,13 @@ export const metadata: Metadata = {
     title: "Lane Changer — 전적 기반 포지션 추천",
     description: "최근 전적을 분석해서 당신에게 진짜 맞는 포지션과 챔피언을 알려드립니다. 팩트만 말합니다.",
     type: "website",
+    images: [{ url: "/og-image.webp", width: 800, height: 800, alt: "Lane Changer" }],
   },
   twitter: {
     card: "summary",
     title: "Lane Changer — 전적 기반 포지션 추천",
     description: "최근 전적을 분석해서 당신에게 진짜 맞는 포지션과 챔피언을 알려드립니다. 팩트만 말합니다.",
+    images: ["/og-image.webp"],
   },
 };
 
