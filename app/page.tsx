@@ -297,11 +297,24 @@ export default function Home() {
               </div>
 
               {result.comment && (
-                <div
-                  className="mt-4 p-4 rounded-lg text-sm leading-relaxed"
-                  style={{ backgroundColor: "#080c18", borderLeft: "3px solid #C89B3C", color: "#c8b896" }}
-                >
-                  {result.comment}
+                <div className="mt-5 rounded-xl overflow-hidden">
+                  <div
+                    className="px-4 py-2 text-xs font-bold tracking-widest uppercase"
+                    style={{ backgroundColor: "#ff3b3b", color: "#fff" }}
+                  >
+                    ⚡ AI 팩폭 분석
+                  </div>
+                  <div
+                    className="p-4 text-base leading-relaxed font-medium"
+                    style={{
+                      backgroundColor: "#1a0a0a",
+                      border: "1px solid #ff3b3b",
+                      borderTop: "none",
+                      color: "#ffcccc",
+                    }}
+                  >
+                    {result.comment}
+                  </div>
                 </div>
               )}
             </div>
