@@ -146,6 +146,8 @@ function selectChampions(lane: string, playstyle: string[]): ChampionRec[] {
   return scored.slice(0, 3).map(({ champ }) => ({ name: champ.name, reason: champ.reason }));
 }
 
+const VALID_POSITIONS = new Set(["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]);
+
 const LANE_KR: Record<string, string> = {
   TOP: "탑",
   JUNGLE: "정글",
@@ -163,9 +165,9 @@ function avg(arr: number[]): number {
 export function extractStats(participant: Participant, gameDuration: number): MatchStats {
   const cs = participant.totalMinionsKilled + participant.neutralMinionsKilled;
   return {
-    position: (participant.teamPosition !== "INVALID" && participant.teamPosition)
-      || (participant.individualPosition !== "INVALID" && participant.individualPosition)
-      || "UNKNOWN",
+    position: (VALID_POSITIONS.has(participant.teamPosition) ? participant.teamPosition
+      : VALID_POSITIONS.has(participant.individualPosition) ? participant.individualPosition
+      : "UNKNOWN"),
     champion: participant.championName,
     kills: participant.kills,
     deaths: participant.deaths,
