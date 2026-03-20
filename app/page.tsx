@@ -22,6 +22,7 @@ interface AnalysisResult {
   currentMainLane: string;
   currentMainLaneKr: string;
   isMultiPosition: boolean;
+  isHighWinRate: boolean;
   playstyle: string[];
   recommendations: LaneRecommendation[];
   totalGames: number;
@@ -326,7 +327,11 @@ export default function Home() {
 
             {/* 추천 포지션 */}
             <h3 className="font-bold text-lg" style={{ color: "#C89B3C" }}>
-              {result.isMultiPosition ? "당장 이 포지션 하나만 파세요" : "추천 포지션"}
+              {result.isMultiPosition
+                ? "당장 이것만 파"
+                : result.isHighWinRate
+                ? "굳이 바꾸고 싶다면"
+                : "추천 포지션"}
             </h3>
             {result.recommendations.map((rec, idx) => (
               <div

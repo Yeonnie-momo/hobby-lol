@@ -39,6 +39,7 @@ export interface AnalysisResult {
   currentMainLane: string;
   currentMainLaneKr: string;
   isMultiPosition: boolean;
+  isHighWinRate: boolean;
   playstyle: string[];
   recommendations: LaneRecommendation[];
   totalGames: number;
@@ -248,13 +249,18 @@ export function analyzeMatches(statsList: MatchStats[]): AnalysisResult {
 
   recommendations.sort((a, b) => b.score - a.score);
 
-  // 멀티 포지션이면 1순위만 강조 (나머지는 참고용)
-  const finalRecommendations = isMultiPosition ? recommendations.slice(0, 1) : recommendations;
+  const isHighWinRate = !isMultiPosition && winRate >= 0.55;
+
+  // 멀티 포지션 또는 고승률이면 1순위만 표시
+  const finalRecommendations = (isMultiPosition || isHighWinRate)
+    ? recommendations.slice(0, 1)
+    : recommendations;
 
   return {
     currentMainLane,
     currentMainLaneKr: LANE_KR[currentMainLane] ?? currentMainLane,
     isMultiPosition,
+    isHighWinRate,
     playstyle,
     recommendations: finalRecommendations,
     totalGames: statsList.length,
